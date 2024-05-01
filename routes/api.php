@@ -15,7 +15,8 @@ Route::post("login", [ApiController::class, "login"]);
 Route::group([
     "middleware" => ["auth:api"]
 ],function(){
-
     Route::get("profile", [ApiController::class, "profile"]);
     Route::get("logout", [ApiController::class, "logout"]);
+    Route::post("search_students_email", [ApiController::class, "search_students_email"]);
+    Route::post("search_students_name", [ApiController::class, "search_students_name"]);
 });
