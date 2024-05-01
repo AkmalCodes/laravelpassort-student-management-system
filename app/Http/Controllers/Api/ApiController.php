@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class ApiController extends Controller
@@ -23,7 +24,7 @@ class ApiController extends Controller
         User::create([
             "name" => $request->name,
             "email" => $request->email,
-            "user_type" => $request->email,
+            "user_type" => $request->user_type,
             "password" => Hash::make($request->password)
         ]);
 
@@ -34,5 +35,30 @@ class ApiController extends Controller
         ]);
     }
 
-    // Login API (POST, formdataessToken;
+    public function login(Request $request){
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required"
+        ]);
+
+        //check login credentials
+        if(Auth::attempt([
+            "email" => $request->email,
+            "password" => $request->password
+        ])){
+            $user = Auth::user(); // creates user object for reference if needed
+            $token = $user->createToken("myToken")->accessToken;
+            return response()->json([
+                "status" => True,
+                "message" => "Login Successful",
+                "token" => $token,
+            ]);
+        }else{
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid Credentials"
+            ]);
+        };
+
+    }
 }
