@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Student;
 
 class ApiController extends Controller
 {
-    public function register(Request $request){
+    public function register(Request $request)
+    {
 
         // data validation
         $request->validate([
@@ -35,17 +37,18 @@ class ApiController extends Controller
         ]);
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
             "email" => "required|email",
             "password" => "required"
         ]);
 
         //check login credentials
-        if(Auth::attempt([
+        if (Auth::attempt([
             "email" => $request->email,
             "password" => $request->password
-        ])){
+        ])) {
             $user = Auth::user(); // creates user object for reference if needed
             $token = $user->createToken("myToken")->accessToken;
             return response()->json([
@@ -53,7 +56,7 @@ class ApiController extends Controller
                 "message" => "Login Successful",
                 "token" => $token,
             ]);
-        }else{
+        } else {
             return response()->json([
                 "status" => false,
                 "message" => "Invalid Credentials"
@@ -61,7 +64,8 @@ class ApiController extends Controller
         };
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         auth()->user()->token()->revoke();
         return response()->json([
             "status" => true,
@@ -69,7 +73,8 @@ class ApiController extends Controller
         ]);
     }
 
-    public function search_students_email(Request $request){
+    public function search_students_email(Request $request)
+    {
         // Authenticate that the current user is logged in and is a Lecturer
         if (!Auth::check() || Auth::user()->user_type !== 'Lecturer') {
             return response()->json([
@@ -84,13 +89,12 @@ class ApiController extends Controller
         ]);
 
         // Attempt to find students by name or email
-        $students = User::where('user_type', 'Student')
-                        ->where(function($query) use ($request) {
-                            $query->where('email', 'LIKE', $request->search . '%');
-                        })
-                        ->get();
+        $students = Student::where(function ($query) use ($request) {
+                $query->where('student_email', 'LIKE', $request->search . '%');
+            })
+            ->get();
 
-        if($students->isEmpty()){
+        if ($students->isEmpty()) {
             return response()->json([
                 "status" => false,
                 "message" => "No students found"
@@ -105,7 +109,8 @@ class ApiController extends Controller
     }
 
 
-    public function search_students_name(Request $request){
+    public function search_students_name(Request $request)
+    {
         // Authenticate that the current user is logged in and is a Lecturer
         if (!Auth::check() || Auth::user()->user_type !== 'Lecturer') {
             return response()->json([
@@ -120,13 +125,12 @@ class ApiController extends Controller
         ]);
 
         // Attempt to find students by name or email
-        $students = User::where('user_type', 'Student')
-                        ->where(function($query) use ($request) {
-                            $query->Where('name', 'LIKE', $request->search . '%');
-                        })
-                        ->get();
+        $students = Student::where(function ($query) use ($request) {
+            $query->where('student_name', 'LIKE', $request->search . '%');
+        })
+        ->get();
 
-        if($students->isEmpty()){
+        if ($students->isEmpty()) {
             return response()->json([
                 "status" => false,
                 "message" => "No students found"
@@ -139,5 +143,4 @@ class ApiController extends Controller
             "students" => $students
         ]);
     }
-
 }
