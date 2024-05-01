@@ -59,6 +59,13 @@ class ApiController extends Controller
                 "message" => "Invalid Credentials"
             ]);
         };
+    }
 
+    public function logout(Request $request){
+        auth()->user()->token()->revoke();
+        return response()->json([
+            "status" => true,
+            "message" => "User Logged Out",
+        ]);
     }
 }
