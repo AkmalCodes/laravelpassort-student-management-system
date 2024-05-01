@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('student_name');
             $table->string('student_email')->unique();
-            $table->string('student_address');
-            $table->string('student_study_course');
+            $table->string('student_address')->default('address');
+            $table->string('student_study_course')->default('course');
             $table->rememberToken();
             $table->timestamps();
 
