@@ -92,7 +92,7 @@ class ApiController extends Controller
         $students = Student::where(function ($query) use ($request) {
                 $query->where('student_email', 'LIKE', $request->search . '%');
             })
-            ->paginate(10);;
+            ->paginate(10);
 
         if ($students->isEmpty()) {
             return response()->json([
