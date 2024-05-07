@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
-class ApiController extends Controller
+class UserController extends Controller
 {
     public function register(Request $request)
     {
