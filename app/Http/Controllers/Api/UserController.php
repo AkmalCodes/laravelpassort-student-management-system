@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Student;
+
 
 class UserController extends Controller
 {
@@ -15,21 +17,38 @@ class UserController extends Controller
         // data validation
         $request->validate([
             "name" => "required",
-            "email" => "required|email|unique:users",
+            "email" => "required|email|unique:user",
             "user_type" => "required|in:Student,Lecturer",
             "password" => "required|confirmed"
         ]);
 
         // Author model
-        User::create([
+        $user = User::create([
             "name" => $request->name,
             "email" => $request->email,
             "user_type" => $request->user_type,
             "password" => Hash::make($request->password)
         ]);
 
+        if ($user->user_type === 'Student') {
+            // Create the student record using the user's ID
+            Student::create([
+                "student_name" => $user->name,
+                "student_email" => $user->email,
+                "user_id" => $user->id // Use the created user's ID
+            ]);
+        }else if ($user->user_type === 'Lecturer') {
+            // Create the student record using the user's ID
+            Student::create([
+                "lecturer_name" => $user->name,
+                "lecturer_email" => $user->email,
+                "user_id" => $user->id // Use the created user's ID
+            ]);
+        }
+
         // Response
         return response()->json([
+            "user_id" => $user->id,
             "status" => true,
             "message" => "User created successfully"
         ]);
