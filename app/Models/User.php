@@ -6,26 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
-
-    protected static function boot() // function to call when User object is instantiated
-    {
-        parent::boot();
-
-        static::created(function ($user) {
-            if ($user->user_type === 'Student') {
-                Student::create([
-                    'student_name' => $user->name,
-                    'student_email' => $user->email,
-                    'user_id' => $user->id // assuming you have a user_id column to relate students to users
-                ]);
-            }
-        });
-    }
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -36,7 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'user_type'
+        'user_type',
+        'user_role'
     ];
 
     /**
@@ -47,6 +32,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'user_type'
     ];
 
     /**
